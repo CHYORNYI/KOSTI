@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0c0502">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Кости">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css?v=6">
+<title>Кости в таверне</title>
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <button id="rulesBtn" class="round-icon">?</button>
+    <h1>Кости в таверне</h1>
+    <button id="soundBtn" class="round-icon">♫</button>
+  </header>
+
+  <section class="score-row">
+    <article id="playerCard" class="score-card player active">
+      <h2>Вы</h2>
+      <div class="score-grid">
+        <div><span>Очки</span><strong id="playerScore">0</strong></div>
+        <div><span>Раунд</span><strong id="turnScore">0</strong></div>
+        <div><span>Отобрано</span><strong id="selectedScore">0</strong></div>
+      </div>
+    </article>
+
+    <article id="aiCard" class="score-card enemy">
+      <h2>Соперник</h2>
+      <div class="score-grid">
+        <div><span>Очки</span><strong id="aiScore">0</strong></div>
+        <div><span>Раунд</span><strong id="aiTurnScore">0</strong></div>
+        <div><span>Отобрано</span><strong id="aiSelectedScore">0</strong></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="playfield">
+    <div id="status" class="status">Ваш ход. Бросьте кости.</div>
+
+    <div class="left-zone">
+      <div class="cup" aria-hidden="true"></div>
+      <div id="dice" class="dice-zone"></div>
+    </div>
+
+    <aside class="rules-panel">
+      <div class="rules-head">
+        <h3>Правила</h3>
+        <button id="hideRules" class="hide-rules">×</button>
+      </div>
+
+      <div class="rule-line">
+        <span class="mini-die">⚀</span>
+        <div><b>Единицы</b><strong>100</strong></div>
+      </div>
+
+      <div class="rule-line">
+        <span class="mini-die">⚄</span>
+        <div><b>Пятёрки</b><strong>50</strong></div>
+      </div>
+
+      <div class="rule-line">
+        <span class="mini-die">⚂</span>
+        <div><b>Три одинаковых</b><strong>×100</strong></div>
+      </div>
+
+      <div class="rule-sequence">
+        <b>Последовательность (1–5)</b>
+        <span>⚀ ⚁ ⚂ ⚃ ⚄</span>
+        <strong>500</strong>
+      </div>
+
+      <div class="rule-sequence">
+        <b>Последовательность (2–6)</b>
+        <span>⚁ ⚂ ⚃ ⚄ ⚅</span>
+        <strong>750</strong>
+      </div>
+
+      <div class="rule-sequence">
+        <b>Последовательность (1–6)</b>
+        <span>⚀ ⚁ ⚂ ⚃ ⚄ ⚅</span>
+        <strong>1500</strong>
+      </div>
+    </aside>
+  </section>
+
+  <section class="actions">
+    <button id="rollBtn" class="action primary">БРОСИТЬ</button>
+    <button id="bankBtn" class="action" disabled>ОТОБРАТЬ ОЧКИ</button>
+  </section>
+
+  <section class="goal-panel">
+    <div class="goal-title">♛ Цель: <strong>4000 очков</strong></div>
+    <div class="goal-text">Наберите больше соперника и достигните цели.</div>
+  </section>
+
+  <footer class="footer">
+    <button id="newBtn" class="new-game">НОВАЯ ИГРА</button>
+  </footer>
+</main>
+
+<dialog id="rulesDialog">
+  <button id="closeRules" class="dialog-close">Закрыть</button>
+  <h2>Правила</h2>
+  <p><b>⚀ Единица:</b> 100 очков</p>
+  <p><b>⚄ Пятёрка:</b> 50 очков</p>
+  <p><b>Три единицы:</b> 1000 очков</p>
+  <p><b>Три одинаковых 2–6:</b> число × 100</p>
+  <p><b>Четыре, пять, шесть одинаковых:</b> очки комбинации удваиваются</p>
+  <p><b>1–2–3–4–5:</b> 500 очков</p>
+  <p><b>2–3–4–5–6:</b> 750 очков</p>
+  <p><b>1–2–3–4–5–6:</b> 1500 очков</p>
+</dialog>
+
+<script src="app.js?v=6"></script>
+</body>
+</html>
