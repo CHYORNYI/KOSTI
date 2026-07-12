@@ -1,0 +1,121 @@
+
+:root{--gold:#d9b66d;--gold2:#f0d696}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#0b0502;color:#ead5a8;font-family:Georgia,"Times New Roman",serif}
+body{
+  min-height:100svh;
+  padding:calc(env(safe-area-inset-top) + 8px) 8px calc(env(safe-area-inset-bottom) + 12px);
+  background:linear-gradient(rgba(8,3,1,.38),rgba(5,2,1,.58)),url("assets/wood.jpg") center/cover fixed;
+}
+button{font:inherit;touch-action:manipulation}
+.app{width:min(100%,760px);margin:auto;display:grid;grid-template-rows:auto minmax(560px,1fr) auto auto auto;gap:8px;min-height:calc(100svh - 20px)}
+.score-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.score-card{
+  overflow:hidden;border:2px solid #5b4329;border-radius:10px;
+  background:linear-gradient(#0002,#0007),url("assets/leather_black.jpg") center/cover;
+  box-shadow:inset 0 0 0 2px #0a0705,inset 0 0 22px #000,0 4px 11px #000a;
+}
+.score-card.enemy{background:linear-gradient(#21080522,#0008),url("assets/leather_red.jpg") center/cover}
+.score-card.active{outline:2px solid var(--gold);box-shadow:0 0 18px #d0974266,inset 0 0 22px #000}
+.score-card h2{margin:0;padding:7px;text-align:center;color:#e6c887;font-size:23px;border-bottom:1px solid #72502c}
+.score-grid{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;padding:8px 5px}
+.score-grid span{display:block;color:#baa170;font-size:10px}
+.score-grid strong{display:block;color:#f1d697;font-size:23px;font-weight:400}
+
+.playfield{
+  position:relative;display:grid;grid-template-columns:minmax(0,1fr) 46%;min-height:560px;
+  border:2px solid #3b2011;border-radius:12px;overflow:hidden;
+  background:linear-gradient(rgba(18,6,2,.06),rgba(0,0,0,.2)),url("assets/wood.jpg") center/cover;
+  box-shadow:inset 0 0 70px #120603,0 7px 20px #000a;
+}
+.status{position:absolute;left:14px;top:12px;right:48%;z-index:6;font-size:17px;color:#f0d89f;text-shadow:0 2px 2px #000}
+.table-zone{position:relative;overflow:hidden}
+.cup{
+  position:absolute;left:-30px;top:90px;width:160px;height:190px;border:8px solid #503623;border-radius:28px 28px 72px 72px;
+  background:radial-gradient(ellipse at 50% 16%,#070504 0 45%,#3a271b 48%,#17100c 68%);
+  box-shadow:0 18px 24px #000c,inset 0 0 18px #000;transform:rotate(-24deg);opacity:.92;
+}
+.dice-zone{position:absolute;inset:56px 6px 8px}
+.die{
+  position:absolute;width:72px;height:72px;border:0;border-radius:15px;
+  background:linear-gradient(145deg,#f1d99e,#b87f44);
+  box-shadow:inset 5px 5px 9px #fff8,inset -9px -10px 12px #714b28,0 12px 13px #000a;
+  transform:translate(-50%,-50%) rotate(var(--r));transition:filter .18s,transform .18s;
+}
+.die:before{content:"";position:absolute;inset:5px;border:1px solid #8f6030;border-radius:11px}
+.pip{position:absolute;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#6a381a,#120703 74%);box-shadow:inset 1px 1px 2px #000,0 1px 1px #f9d49755}
+.die.selected{outline:4px solid #dff6ff;filter:brightness(1.13);transform:translate(-50%,-60%) rotate(var(--r));box-shadow:0 0 0 3px #79d2ff99,0 0 24px #aeeaff,inset 5px 5px 9px #fff8,inset -9px -10px 12px #714b28}
+.die.locked{pointer-events:none;filter:saturate(.65) brightness(.78)}
+.die.rolling{animation:roll 1.05s cubic-bezier(.2,.75,.2,1)}
+@keyframes roll{
+  0%{transform:translate(-50%,-50%) rotate(-180deg) scale(.6)}
+  35%{transform:translate(-35%,-70%) rotate(95deg) scale(1.08)}
+  70%{transform:translate(-58%,-42%) rotate(-35deg) scale(.94)}
+  100%{transform:translate(-50%,-50%) rotate(var(--r)) scale(1)}
+}
+
+.rules-panel{
+  margin:8px 8px 8px 0;padding:10px;color:#e7ca89;
+  background:linear-gradient(#0002,#0008),url("assets/leather_black.jpg") center/cover;
+  border:2px solid #5a4229;border-radius:10px;
+  box-shadow:inset 0 0 0 2px #0a0705,inset 0 0 24px #000,0 6px 16px #000b;
+  overflow:auto;z-index:5;
+}
+.panel-title{text-align:center;font-size:25px;padding:4px 0 8px;border-bottom:1px solid #72502c;color:#e5c783}
+.rules-two-col{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:8px}
+.rule-list{display:flex;flex-direction:column;gap:5px}
+.rule-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:6px;font-size:14px}
+.rule-row.seq span:first-child{font-size:16px;white-space:nowrap;letter-spacing:1px}
+.dice-mini{font-size:22px}
+.divider{height:1px;background:linear-gradient(90deg,transparent,#8f6a38,transparent);margin:10px 0}
+.joker-note,.extra-title{margin:0;font-size:12px;line-height:1.35;color:#d5ba80}
+.extra-rules{display:flex;flex-direction:column;gap:7px;margin-top:8px}
+.extra-rules div{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.extra-rules span{font-size:17px;letter-spacing:1px}
+.extra-rules strong{font-size:15px}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.action{
+  min-height:58px;border-radius:8px;border:2px solid #65492d;color:#ead09a;
+  font-size:clamp(13px,3.8vw,18px);line-height:1.05;font-weight:700;padding:8px 10px;
+  background:linear-gradient(#0001,#0007),url("assets/button.jpg") center/cover;
+  box-shadow:inset 0 0 0 2px #0b0806,0 4px 10px #000a;text-shadow:0 2px #000;
+}
+.action.primary{border-color:#a07135}.action:disabled{opacity:.38;filter:grayscale(.6)}
+.goal-panel{
+  padding:10px;text-align:center;border:2px solid #3e2d20;border-radius:9px;
+  background:linear-gradient(#0002,#0008),url("assets/leather_black.jpg") center/cover;
+  box-shadow:inset 0 0 0 2px #0b0806,0 4px 11px #0009;
+}
+.goal-title{color:#ddb96f;font-size:19px}.goal-text{margin-top:4px;color:#af996f;font-size:12px}
+.bottom-row{display:grid;grid-template-columns:52px 1fr 52px;gap:10px;align-items:center}
+.round-icon{
+  width:48px;height:48px;border-radius:50%;border:2px solid #76532d;color:var(--gold2);font-size:24px;
+  background:radial-gradient(circle,#3c2a1d,#120c08 72%);box-shadow:inset 0 0 0 3px #090604,0 4px 12px #000;
+}
+.new-game{
+  min-height:50px;border-radius:8px;border:2px solid #684a2d;color:#d8b979;font-size:17px;
+  background:linear-gradient(#28050222,#0009),url("assets/leather_red.jpg") center/cover;
+  box-shadow:inset 0 0 0 2px #0b0806,0 4px 10px #0009;
+}
+dialog{width:min(92vw,430px);max-height:84svh;overflow:auto;color:#2b1709;background:url("assets/parchment.jpg") center/cover;border:2px solid #765027;border-radius:8px;box-shadow:0 18px 55px #000}
+dialog::backdrop{background:#000c}.dialog-close{float:right;border:1px solid #67451f;background:#3d2514;color:#efd69b;padding:8px;border-radius:6px}
+
+@media(max-width:430px){
+  .app{grid-template-rows:auto minmax(520px,1fr) auto auto auto}
+  .playfield{grid-template-columns:minmax(0,1fr) 48%;min-height:520px}
+  .status{right:50%;font-size:15px}
+  .score-card h2{font-size:20px}.score-grid strong{font-size:20px}
+  .rules-panel{padding:8px 7px}
+  .panel-title{font-size:21px}
+  .rule-row{font-size:11px}.rule-row.seq span:first-child{font-size:13px;letter-spacing:0}
+  .dice-mini{font-size:18px}
+  .joker-note,.extra-title{font-size:10px}
+  .extra-rules span{font-size:13px}.extra-rules strong{font-size:12px}
+  .cup{width:132px;height:160px;left:-38px}
+  .die{width:62px;height:62px}
+}
+@media(max-width:360px){
+  .playfield{grid-template-columns:minmax(0,1fr) 50%}
+  .die{width:56px;height:56px}.action{font-size:12px}
+}
