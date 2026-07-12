@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="650" viewBox="0 0 500 650">
+<defs>
+ <linearGradient id="cup" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#7b5a39"/>
+  <stop offset=".25" stop-color="#2b1c12"/>
+  <stop offset=".62" stop-color="#0d0907"/>
+  <stop offset="1" stop-color="#5a3a23"/>
+ </linearGradient>
+ <radialGradient id="inside" cx=".5" cy=".4" r=".7">
+  <stop offset="0" stop-color="#030202"/>
+  <stop offset=".65" stop-color="#090604"/>
+  <stop offset="1" stop-color="#4d321f"/>
+ </radialGradient>
+ <filter id="sh"><feDropShadow dx="22" dy="28" stdDeviation="18" flood-opacity=".8"/></filter>
+</defs>
+<g filter="url(#sh)">
+ <path d="M85 115 Q250 40 415 115 L365 520 Q250 615 135 520 Z" fill="url(#cup)" stroke="#1c1009" stroke-width="18"/>
+ <ellipse cx="250" cy="120" rx="170" ry="92" fill="#5a3d28" stroke="#1a0e08" stroke-width="16"/>
+ <ellipse cx="250" cy="120" rx="135" ry="62" fill="url(#inside)"/>
+ <path d="M126 185 Q250 235 374 185" fill="none" stroke="#a4774d" stroke-opacity=".35" stroke-width="12"/>
+</g>
+</svg>

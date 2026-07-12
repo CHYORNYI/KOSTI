@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="500" viewBox="0 0 1000 500">
+<defs>
+ <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#2f2924"/>
+  <stop offset=".42" stop-color="#171311"/>
+  <stop offset="1" stop-color="#090706"/>
+ </linearGradient>
+ <radialGradient id="shine" cx=".5" cy="0" r=".9">
+  <stop offset="0" stop-color="#8a7157" stop-opacity=".24"/>
+  <stop offset=".45" stop-color="#000" stop-opacity="0"/>
+  <stop offset="1" stop-color="#000" stop-opacity=".45"/>
+ </radialGradient>
+ <filter id="noise"><feTurbulence baseFrequency=".7" numOctaves="2" seed="5"/><feColorMatrix values=".08 0 0 0 0 .06 0 0 0 0 .04 0 0 0 0 0 0 0 .35 0"/></filter>
+</defs>
+<rect width="1000" height="500" rx="42" fill="url(#g)"/>
+<rect width="1000" height="500" rx="42" fill="url(#shine)"/>
+<rect width="1000" height="500" rx="42" filter="url(#noise)" opacity=".45"/>
+</svg>

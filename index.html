@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0b0502">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Кости">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles.css?v=9">
+<title>Кости в таверне</title>
+</head>
+<body>
+<main class="app">
+  <header class="titlebar">
+    <button id="rulesBtn" class="round">?</button>
+    <h1>Кости в таверне</h1>
+    <button id="soundBtn" class="round">♫</button>
+  </header>
+
+  <section class="scores">
+    <article id="playerCard" class="panel score-panel active">
+      <h2>Вы</h2>
+      <div class="score-grid">
+        <div><span>Очки</span><strong id="playerScore">0</strong></div>
+        <div><span>Раунд</span><strong id="turnScore">0</strong></div>
+        <div><span>Отобрано</span><strong id="selectedScore">0</strong></div>
+      </div>
+    </article>
+    <article id="aiCard" class="panel score-panel enemy">
+      <h2>Соперник</h2>
+      <div class="score-grid">
+        <div><span>Очки</span><strong id="aiScore">0</strong></div>
+        <div><span>Раунд</span><strong id="aiTurnScore">0</strong></div>
+        <div><span>Отобрано</span><strong id="aiSelectedScore">0</strong></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="board">
+    <div id="status" class="status">Ваш ход. Бросьте кости.</div>
+
+    <div class="table-side">
+      <img class="cup" src="assets/cup.svg" alt="">
+      <div id="dice" class="dice-zone"></div>
+    </div>
+
+    <aside class="panel rules-panel">
+      <h2>Правила</h2>
+      <div class="rules-columns">
+        <div class="rules-list">
+          <div class="rule"><span class="faces">⚀</span><strong>100</strong></div>
+          <div class="rule"><span class="faces">⚄</span><strong>50</strong></div>
+          <div class="rule"><span class="faces">⚀ ⚁ ⚂ ⚃ ⚄</span><strong>500</strong></div>
+          <div class="rule"><span class="faces">⚁ ⚂ ⚃ ⚄ ⚅</span><strong>750</strong></div>
+          <div class="rule"><span class="faces">⚀ ⚁ ⚂ ⚃ ⚄ ⚅</span><strong>1500</strong></div>
+        </div>
+        <div class="rules-list">
+          <div class="rule"><span class="faces">⚀ ⚀ ⚀</span><strong>1000</strong></div>
+          <div class="rule"><span class="faces">⚁ ⚁ ⚁</span><strong>200</strong></div>
+          <div class="rule"><span class="faces">⚂ ⚂ ⚂</span><strong>300</strong></div>
+          <div class="rule"><span class="faces">⚃ ⚃ ⚃</span><strong>400</strong></div>
+          <div class="rule"><span class="faces">⚄ ⚄ ⚄</span><strong>500</strong></div>
+          <div class="rule"><span class="faces">⚅ ⚅ ⚅</span><strong>600</strong></div>
+        </div>
+      </div>
+      <div class="ornament"></div>
+      <p class="rules-note">Каждая дополнительная одинаковая кость после трёх удваивает стоимость комбинации.</p>
+      <div class="extra">
+        <div><span>4 одинаковых</span><strong>×2</strong></div>
+        <div><span>5 одинаковых</span><strong>×4</strong></div>
+        <div><span>6 одинаковых</span><strong>×8</strong></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="actions">
+    <button id="rollBtn" class="game-button primary">БРОСИТЬ</button>
+    <button id="bankBtn" class="game-button" disabled>ОТОБРАТЬ ОЧКИ</button>
+  </section>
+
+  <section class="panel goal">
+    <div>♛ Цель: <strong>4000 очков</strong></div>
+    <small>Наберите больше соперника и достигните цели.</small>
+  </section>
+
+  <button id="newBtn" class="game-button new-game">НОВАЯ ИГРА</button>
+</main>
+
+<dialog id="rulesDialog">
+  <button id="closeRules" class="dialog-close">Закрыть</button>
+  <h2>Подробные правила</h2>
+  <p>Выберите кости, дающие очки, затем заберите очки или рискните и бросьте оставшиеся.</p>
+  <p>Если бросок не принёс ни одной комбинации, очки текущего раунда сгорают.</p>
+  <p>После использования всех шести костей вы снова бросаете все шесть.</p>
+</dialog>
+<script src="app.js?v=9"></script>
+</body>
+</html>
