@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#23170f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Кости">
+  <link rel="manifest" href="manifest.webmanifest">
+  <title>Кости в таверне</title>
+  <style>
+    :root { --ink:#2a1a10; --gold:#d7b56d; --paper:#e5cca0; --red:#7c231d; }
+    * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html,body { margin:0; min-height:100%; background:#17100b; color:#f6ead0; font-family:Georgia,"Times New Roman",serif; }
+    body {
+      min-height:100svh; padding:calc(env(safe-area-inset-top) + 10px) 12px calc(env(safe-area-inset-bottom) + 14px);
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,210,130,.12), transparent 34%),
+        repeating-linear-gradient(93deg, rgba(255,255,255,.018) 0 2px, transparent 2px 17px),
+        linear-gradient(#2c1b10,#140e0a);
+    }
+    .app { width:min(100%,520px); margin:auto; min-height:calc(100svh - 24px); display:flex; flex-direction:column; gap:10px; }
+    .title { text-align:center; margin:0; font-size:clamp(26px,7vw,38px); color:var(--gold); text-shadow:0 2px 0 #000; letter-spacing:.04em; }
+    .subtitle { text-align:center; opacity:.75; margin-top:-7px; font-size:13px; }
+    .scoreboard { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .score {
+      border:1px solid #80623c; border-radius:12px; padding:9px 10px;
+      background:linear-gradient(135deg,rgba(80,48,25,.94),rgba(38,24,15,.94));
+      box-shadow:inset 0 0 18px #0007,0 3px 10px #0008;
+    }
+    .score.active { outline:2px solid var(--gold); }
+    .score b { display:block; color:#e9ce93; font-size:14px; }
+    .score strong { font-size:25px; }
+    .target { text-align:center; font-size:13px; opacity:.76; }
+    .table {
+      position:relative; flex:1; min-height:350px; border:8px solid #3a2414; border-radius:24px;
+      background:
+       radial-gradient(ellipse at center, rgba(137,77,35,.33), transparent 55%),
+       repeating-linear-gradient(3deg, #5c2f17 0 4px,#552a15 4px 8px,#63351b 8px 12px);
+      box-shadow:inset 0 0 60px #170b05,0 8px 25px #000a;
+      padding:16px 11px 14px; display:flex; flex-direction:column; justify-content:space-between;
+      overflow:hidden;
+    }
+    .table:before { content:""; position:absolute; inset:0; pointer-events:none; opacity:.18;
+      background:repeating-radial-gradient(ellipse at 20% 30%,transparent 0 13px,#000 14px 15px); }
+    .status { position:relative; z-index:1; min-height:45px; text-align:center; font-size:17px; line-height:1.25; text-shadow:0 2px 2px #000; }
+    .dice { position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; align-items:center; padding:8px 5px; }
+    .die {
+      aspect-ratio:1; border:0; border-radius:17%; background:#e8dcc2; color:#1c1712;
+      box-shadow:inset -5px -7px 9px #9c8b6f,inset 4px 4px 7px #fff,0 6px 8px #0008;
+      font-size:clamp(42px,14vw,68px); line-height:1; cursor:pointer; transform:rotate(var(--r,0deg));
+      transition:transform .12s,filter .12s,outline .12s;
+    }
+    .die.selected { outline:4px solid #e8c66f; filter:brightness(1.08); transform:translateY(-7px) rotate(var(--r,0deg)); }
+    .die.locked { opacity:.28; pointer-events:none; }
+    .die.rolling { animation:roll .42s ease-out; }
+    @keyframes roll { 0%{transform:scale(.75) rotate(-30deg)} 55%{transform:scale(1.1) rotate(25deg)} 100%{transform:scale(1) rotate(var(--r,0deg))} }
+    .turnbox { position:relative; z-index:1; display:grid; grid-template-columns:1fr 1fr; gap:8px; text-align:center; }
+    .turnbox div { background:#21140dbd; border:1px solid #78502e; border-radius:10px; padding:7px; }
+    .turnbox span { display:block; opacity:.7; font-size:12px; }
+    .turnbox strong { color:#f0d797; font-size:20px; }
+    .controls { display:grid; grid-template-columns:1.2fr 1fr; gap:8px; }
+    button { touch-action:manipulation; -webkit-user-select:none; user-select:none; }
+    button.action {
+      min-height:54px; border-radius:12px; border:1px solid #e4c078; padding:8px 10px; font:700 16px Georgia,serif;
+      color:#fff5df; background:linear-gradient(#8b392d,#5c211b); box-shadow:inset 0 1px #fff3,0 4px 8px #0008;
+    }
+    button.action.secondary { background:linear-gradient(#77552f,#49331d); }
+    button.action:disabled { opacity:.38; }
+    .footer { display:flex; justify-content:space-between; gap:8px; }
+    .small { border:1px solid #735636; background:#2e2015; color:#ead8b4; border-radius:9px; padding:8px 10px; font-family:inherit; }
+    dialog { width:min(92vw,480px); max-height:82svh; overflow:auto; color:#2b1b10; background:var(--paper); border:3px solid #64411f; border-radius:14px; box-shadow:0 15px 50px #000; }
+    dialog::backdrop { background:#000b; }
+    dialog h2 { margin-top:0; }
+    dialog table { width:100%; border-collapse:collapse; font-size:14px; }
+    dialog td { border-bottom:1px solid #9e8059; padding:6px; }
+    .close { float:right; }
+    .win { color:#ffe69a; font-size:22px; }
+    @media (orientation:landscape) and (max-height:540px) {
+      .app { width:min(96vw,760px); display:grid; grid-template-columns:220px 1fr; grid-template-rows:auto 1fr auto; }
+      .head { grid-column:1; } .table{grid-column:2;grid-row:1/4;min-height:calc(100svh - 24px)}
+      .controls,.footer{grid-column:1}.scoreboard{grid-template-columns:1fr}.subtitle{display:none}
+    }
+  </style>
+</head>
+<body>
+<main class="app">
+  <section class="head">
+    <h1 class="title">Кости в таверне</h1>
+    <div class="subtitle">Средневековая игра против трактирщика</div>
+    <div class="scoreboard">
+      <div id="playerCard" class="score active"><b>Ты</b><strong id="playerScore">0</strong></div>
+      <div id="aiCard" class="score"><b>Трактирщик</b><strong id="aiScore">0</strong></div>
+    </div>
+    <div class="target">Победа при <span id="targetLabel">4000</span> очках</div>
+  </section>
+
+  <section class="table">
+    <div id="status" class="status">Твой ход. Бросай кости.</div>
+    <div id="dice" class="dice"></div>
+    <div class="turnbox">
+      <div><span>Выбрано</span><strong id="selectedScore">0</strong></div>
+      <div><span>За ход</span><strong id="turnScore">0</strong></div>
+    </div>
+  </section>
+
+  <section class="controls">
+    <button type="button" id="rollBtn" class="action">Бросить кости</button>
+    <button type="button" id="bankBtn" class="action secondary" disabled>Забрать очки</button>
+  </section>
+  <section class="footer">
+    <button type="button" id="rulesBtn" class="small">Правила</button>
+    <button type="button" id="newBtn" class="small">Новая партия</button>
+    <button type="button" id="soundBtn" class="small">Звук: вкл.</button>
+  </section>
+</main>
+
+<dialog id="rules">
+  <button type="button" class="small close">Закрыть</button>
+  <h2>Правила</h2>
+  <p>Нажми «Бросить кости», затем выбери комбинацию. Можно забрать очки или рискнуть и бросить оставшиеся кости. Если новый бросок ничего не приносит — все очки текущего хода сгорают.</p>
+  <table>
+    <tr><td>Одна единица</td><td>100</td></tr><tr><td>Одна пятёрка</td><td>50</td></tr>
+    <tr><td>Три единицы</td><td>1000</td></tr><tr><td>Три одинаковых 2–6</td><td>число × 100</td></tr>
+    <tr><td>Четыре / пять / шесть одинаковых</td><td>двойные очки за каждую следующую кость</td></tr>
+    <tr><td>1–2–3–4–5</td><td>500</td></tr><tr><td>2–3–4–5–6</td><td>750</td></tr>
+    <tr><td>1–2–3–4–5–6</td><td>1500</td></tr>
+  </table>
+  <p>Если использованы все шесть костей, получаешь «горячие кости» и снова бросаешь все шесть.</p>
+</dialog>
+
+<script>
+const faces=['','⚀','⚁','⚂','⚃','⚄','⚅'];
+let state={player:0,ai:0,turn:0,whose:'player',dice:[],available:6,selected:new Set(),rolled:false,sound:true,over:false};
+const target=4000;
+const $=id=>document.getElementById(id);
+const diceEl=$('dice'), statusEl=$('status'), rollBtn=$('rollBtn'), bankBtn=$('bankBtn');
+
+function save(){ try{ localStorage.setItem('tavernDiceSave',JSON.stringify(Object.assign({},state,{selected:Array.from(state.selected)}))); }catch(e){} }
+function load(){
+  try{ const s=JSON.parse(localStorage.getItem('tavernDiceSave')); if(s&&!s.over){state=Object.assign({},state,s,{selected:new Set(s.selected||[])});} }catch(e){}
+}
+function beep(freq=180,d=.06){
+  if(!state.sound)return;
+  try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();
+  o.frequency.value=freq;o.type='triangle';g.gain.setValueAtTime(.05,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);
+  o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d);}catch(e){}
+}
+function randomDie(){ return 1+Math.floor(Math.random()*6); }
+function scoreDice(vals){
+  if(!vals.length)return 0;
+  const sorted=[...vals].sort((a,b)=>a-b), key=sorted.join('');
+  if(key==='123456')return 1500;
+  if(key==='12345')return 500;
+  if(key==='23456')return 750;
+  const counts=[0,0,0,0,0,0,0]; vals.forEach(v=>counts[v]++);
+  let score=0;
+  for(let v=1;v<=6;v++){
+    let n=counts[v];
+    if(n>=3){ let base=v===1?1000:v*100; score+=base*Math.pow(2,n-3); counts[v]=0; }
+  }
+  score+=counts[1]*100+counts[5]*50;
+  return score;
+}
+function hasAnyScore(vals){
+  if(vals.includes(1)||vals.includes(5))return true;
+  const c={}; vals.forEach(v=>c[v]=(c[v]||0)+1);
+  if(Object.values(c).some(n=>n>=3))return true;
+  const k=[...vals].sort((a,b)=>a-b).join('');
+  return k.includes('12345')||k.includes('23456')||k.includes('123456');
+}
+function selectedValues(){return [...state.selected].map(i=>state.dice[i]);}
+function render(){
+  $('playerScore').textContent=state.player; $('aiScore').textContent=state.ai;
+  $('turnScore').textContent=state.turn; $('selectedScore').textContent=scoreDice(selectedValues());
+  $('playerCard').classList.toggle('active',state.whose==='player'); $('aiCard').classList.toggle('active',state.whose==='ai');
+  diceEl.innerHTML='';
+  if(!state.dice.length){
+    for(let i=0;i<6;i++){const d=document.createElement('button');d.className='die locked';d.textContent='?';diceEl.appendChild(d);}
+  } else state.dice.forEach((v,i)=>{
+    const d=document.createElement('button'); d.className='die'; d.textContent=faces[v]; d.style.setProperty('--r',`${(i%3-1)*2}deg`);
+    if(state.selected.has(i))d.classList.add('selected');
+    if(state.whose!=='player'||!state.rolled)d.classList.add('locked');
+    d.onclick=()=>toggleDie(i); diceEl.appendChild(d);
+  });
+  const selScore=scoreDice(selectedValues());
+  rollBtn.disabled=state.over||state.whose!=='player'||(state.rolled&&selScore===0);
+  rollBtn.textContent=state.rolled?'Засчитать и бросить':'Бросить кости';
+  bankBtn.disabled=state.over||state.whose!=='player'||!state.rolled||selScore===0;
+  save();
+}
+function toggleDie(i){
+  state.selected.has(i)?state.selected.delete(i):state.selected.add(i);
+  const sc=scoreDice(selectedValues());
+  statusEl.textContent=sc?`Выбрано на ${sc} очков.`:'Эта комбинация очков не даёт.';
+  beep(250,.035);render();
+}
+function animateDice(){
+  [...diceEl.children].forEach(d=>d.classList.add('rolling'));
+  setTimeout(()=>[...diceEl.children].forEach(d=>d.classList.remove('rolling')),430);
+}
+function playerRoll(){
+  if(state.rolled){
+    const sc=scoreDice(selectedValues()); if(!sc)return;
+    state.turn+=sc;
+    const used=state.selected.size;
+    state.available-=used;
+    if(state.available<=0){state.available=6;statusEl.textContent='Горячие кости! Снова бросаешь все шесть.';}
+  }
+  state.dice=Array.from({length:state.available},randomDie); state.selected.clear(); state.rolled=true;
+  beep(120,.1);render();animateDice();
+  if(!hasAnyScore(state.dice)){
+    state.turn=0;state.rolled=false;statusEl.textContent='Неудачный бросок. Очки хода сгорели.';
+    render();setTimeout(()=>startAI(),950);
+  } else statusEl.textContent='Выбери кости с очками.';
+}
+function bank(){
+  const sc=scoreDice(selectedValues()); if(!sc)return;
+  state.turn+=sc;state.player+=state.turn;beep(420,.12);
+  state.turn=0;state.rolled=false;state.available=6;state.dice=[];state.selected.clear();
+  if(checkWin('player'))return;
+  statusEl.textContent='Ты забрал очки. Ход трактирщика.';
+  render();setTimeout(startAI,700);
+}
+function checkWin(who){
+  if(state[who]>=target){state.over=true;statusEl.innerHTML=who==='player'?'<span class="win">Ты выиграл партию!</span>':'<span class="win">Трактирщик победил.</span>';render();return true}
+  return false;
+}
+function bestSelection(vals){
+  let best={score:0,idx:[]};
+  for(let mask=1;mask<(1<<vals.length);mask++){
+    const idx=[],arr=[];for(let i=0;i<vals.length;i++)if(mask>>i&1){idx.push(i);arr.push(vals[i]);}
+    const s=scoreDice(arr);if(s>best.score||(s===best.score&&idx.length<best.idx.length))best={score:s,idx};
+  } return best;
+}
+function startAI(){
+  if(state.over)return;
+  state.whose='ai';state.turn=0;state.available=6;state.dice=[];state.selected.clear();state.rolled=false;render();
+  aiRoll();
+}
+function aiRoll(){
+  state.dice=Array.from({length:state.available},randomDie);state.selected.clear();state.rolled=true;
+  statusEl.textContent='Трактирщик бросает кости…';beep(105,.1);render();animateDice();
+  setTimeout(()=>{
+    const best=bestSelection(state.dice);
+    if(!best.score){
+      state.turn=0;statusEl.textContent='Трактирщику не повезло. Его очки сгорели.';render();setTimeout(endAI,850);return;
+    }
+    best.idx.forEach(i=>state.selected.add(i));state.turn+=best.score;state.available-=best.idx.length;
+    if(state.available<=0)state.available=6;
+    render();
+    const need=target-state.ai;
+    const riskThreshold=state.available<=2?650:900;
+    const shouldBank=state.turn>=need || state.turn>=riskThreshold || (state.turn>=550&&Math.random()<.55);
+    if(shouldBank){
+      state.ai+=state.turn;statusEl.textContent=`Трактирщик забирает ${state.turn} очков.`;state.turn=0;render();
+      if(checkWin('ai'))return;setTimeout(endAI,850);
+    } else {
+      statusEl.textContent=`Трактирщик рискует. За ход: ${state.turn}.`;render();setTimeout(aiRoll,900);
+    }
+  },650);
+}
+function endAI(){
+  state.whose='player';state.turn=0;state.available=6;state.dice=[];state.selected.clear();state.rolled=false;
+  statusEl.textContent='Твой ход. Бросай кости.';render();
+}
+function newGame(){
+  state={player:0,ai:0,turn:0,whose:'player',dice:[],available:6,selected:new Set(),rolled:false,sound:state.sound,over:false};
+  localStorage.removeItem('tavernDiceSave');statusEl.textContent='Твой ход. Бросай кости.';render();
+}
+function bindTap(el,fn){
+  if(!el)return;
+  el.addEventListener('click',function(e){e.preventDefault();fn(e);},{passive:false});
+}
+bindTap(rollBtn,playerRoll);
+bindTap(bankBtn,bank);
+bindTap($('rulesBtn'),function(){ const dlg=$('rules'); if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open'); });
+bindTap(document.querySelector('.close'),function(){ const dlg=$('rules'); if(dlg.close) dlg.close(); else dlg.removeAttribute('open'); });
+bindTap($('newBtn'),newGame);
+bindTap($('soundBtn'),function(){state.sound=!state.sound;$('soundBtn').textContent='Звук: '+(state.sound?'вкл.':'выкл.');render();});
+load();$('soundBtn').textContent='Звук: '+(state.sound?'вкл.':'выкл.');render();
+if(location.protocol==='https:' && 'serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(function(){});
+</script>
+</body>
+</html>

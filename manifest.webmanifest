@@ -1,0 +1,10 @@
+{
+  "name": "Кости в таверне",
+  "short_name": "Кости",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#17100b",
+  "theme_color": "#23170f",
+  "lang": "ru",
+  "icons": []
+}
