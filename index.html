@@ -1,304 +1,85 @@
 <!doctype html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#140b06">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Кости">
-<link rel="manifest" href="manifest.webmanifest">
-<title>Кости в таверне</title>
-<style>
-:root{
-  --gold:#cfa85f; --gold2:#f0d28d; --ink:#170d07; --cream:#ead09b;
-  --panel:#17110e; --red:#46150f; --line:#74522d;
-}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;min-height:100%;background:#100905;color:#ead7ae;font-family:Georgia,"Times New Roman",serif}
-button{font-family:inherit}
-body{
-  min-height:100svh;
-  padding:calc(env(safe-area-inset-top) + 8px) 8px calc(env(safe-area-inset-bottom) + 10px);
-  overflow-x:hidden;
-  background:
-    radial-gradient(circle at 82% 8%,rgba(255,174,66,.13),transparent 23%),
-    linear-gradient(rgba(25,10,3,.1),rgba(10,4,2,.44)),
-    repeating-linear-gradient(1deg,#4a2412 0 5px,#512817 6px 11px,#3f1e0f 12px 17px);
-}
-body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;
-  background:
-    repeating-radial-gradient(ellipse at 25% 12%,transparent 0 20px,rgba(0,0,0,.2) 21px 22px),
-    linear-gradient(90deg,rgba(0,0,0,.28),transparent 15%,transparent 85%,rgba(0,0,0,.3));
-  mix-blend-mode:multiply;
-}
-.app{position:relative;z-index:1;width:min(100%,720px);margin:auto;min-height:calc(100svh - 18px);display:grid;grid-template-rows:auto auto 1fr auto auto;gap:8px}
-.topbar{position:relative;min-height:68px;display:flex;align-items:center;justify-content:center}
-.title{
-  margin:0;text-align:center;color:var(--gold);font-weight:700;
-  font-size:clamp(34px,10vw,64px);line-height:.9;letter-spacing:.02em;
-  text-shadow:0 3px 0 #2d160a,0 5px 12px #000;
-}
-.iconBtn{
-  position:absolute;top:3px;width:46px;height:46px;border-radius:50%;
-  border:2px solid #6f5031;background:radial-gradient(circle,#31231a,#120d0a 72%);
-  color:var(--gold2);font-size:25px;box-shadow:inset 0 0 0 3px #0c0806,0 3px 10px #000;
-}
-#rulesBtn{left:2px} #soundBtn{right:2px}
-
-.hud{display:grid;grid-template-columns:1fr 1fr;gap:7px}
-.card{
-  position:relative;border:2px solid #3f3023;border-radius:10px;padding:8px 10px;
-  background:linear-gradient(145deg,rgba(30,23,19,.97),rgba(12,9,8,.98));
-  box-shadow:inset 0 0 0 2px #0d0907,inset 0 0 25px #000,0 4px 10px #0009;
-}
-.card.ai{background:linear-gradient(145deg,rgba(78,25,17,.95),rgba(35,10,8,.98))}
-.card.active{outline:2px solid #c59a52;box-shadow:0 0 18px #c58a364d,inset 0 0 20px #000}
-.cardTitle{text-align:center;font-size:20px;color:#d9b875;border-bottom:1px solid #60442a;padding-bottom:4px;margin-bottom:5px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:center;gap:3px}
-.stats span{font-size:10px;color:#bfa67a;display:block}
-.stats strong{font-size:21px;color:#f1d697;font-weight:400}
-
-.board{
-  position:relative;min-height:390px;border-radius:12px;overflow:hidden;
-  border:2px solid rgba(52,25,11,.9);box-shadow:inset 0 0 60px #120703,0 5px 18px #0009;
-  background:
-    radial-gradient(ellipse at 48% 42%,rgba(170,86,35,.18),transparent 44%),
-    repeating-linear-gradient(2deg,#572a16 0 7px,#4b2312 8px 14px,#63331b 15px 20px);
-}
-.board:before{
-  content:"";position:absolute;inset:0;opacity:.35;pointer-events:none;
-  background:
-    repeating-radial-gradient(ellipse at 30% 20%,transparent 0 30px,rgba(0,0,0,.2) 31px 33px),
-    linear-gradient(90deg,#0005,transparent 15%,transparent 85%,#0005);
-}
-.atmosphere{position:absolute;right:4%;top:2%;display:flex;align-items:flex-start;gap:7px;opacity:.9;pointer-events:none}
-.cup{width:52px;height:64px;border:4px solid #5a4635;border-radius:7px 7px 20px 20px;background:radial-gradient(ellipse at 50% 10%,#090706 0 47%,#4a392c 50%,#1d1712 66%);transform:rotate(5deg);box-shadow:0 8px 15px #000b}
-.candle{width:28px;height:53px;border-radius:8px 8px 4px 4px;background:linear-gradient(90deg,#8c5c25,#e2ad59,#6e431c);box-shadow:0 0 25px #ffb348}
-.candle:before{content:"";position:absolute;width:10px;height:18px;margin:-16px 0 0 9px;border-radius:50% 50% 45% 45%;background:#fff1a0;box-shadow:0 0 18px #ff9f28}
-
-.status{position:absolute;top:10px;left:12px;right:110px;min-height:42px;font-size:15px;color:#e6c98e;text-shadow:0 2px 2px #000;z-index:3}
-.diceArea{position:absolute;inset:58px 8px 10px;z-index:2}
-.die{
-  position:absolute;width:74px;height:74px;border:0;border-radius:15px;
-  background:linear-gradient(145deg,#f0d79f,#b8894e);
-  box-shadow:inset 4px 4px 8px #fff8,inset -8px -9px 12px #76512d,0 10px 11px #0009;
-  transform:translate(-50%,-50%) rotate(var(--rot));
-  transition:transform .18s,filter .15s,outline .15s;
-  touch-action:manipulation;
-}
-.die:before{content:"";position:absolute;inset:5px;border:1px solid #8f6437;border-radius:12px;opacity:.65}
-.die .pip{position:absolute;width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#5d3419,#160b05 72%);box-shadow:inset 1px 1px 2px #000,0 1px 1px #f9d89466}
-.die.selected{outline:4px solid #eaf7ff;filter:brightness(1.12);transform:translate(-50%,-58%) rotate(var(--rot));box-shadow:0 0 0 3px #85d8ff99,0 0 25px #9fe5ff,inset 4px 4px 8px #fff8,inset -8px -9px 12px #76512d}
-.die.locked{pointer-events:none;filter:saturate(.55) brightness(.75)}
-.die.rolling{animation:roll .46s ease-out}
-@keyframes roll{0%{transform:translate(-50%,-50%) rotate(-70deg) scale(.7)}60%{transform:translate(-50%,-50%) rotate(35deg) scale(1.12)}100%{transform:translate(-50%,-50%) rotate(var(--rot)) scale(1)}}
-
-.rulesSheet{
-  position:absolute;right:8px;top:58px;width:170px;padding:11px 9px 9px;
-  color:#251407;background:
-    linear-gradient(#ead3a2e8,#d6b77ee8),
-    repeating-radial-gradient(circle at 20% 20%,#0000 0 9px,#8d64292b 10px 11px);
-  border:1px solid #8c622d;box-shadow:0 5px 18px #0009,inset 0 0 20px #77531f44;
-  clip-path:polygon(2% 1%,98% 0,100% 5%,98% 12%,100% 18%,98% 26%,100% 33%,98% 42%,100% 50%,98% 61%,100% 70%,98% 81%,100% 92%,97% 100%,2% 99%,0 94%,2% 84%,0 74%,2% 64%,0 54%,2% 44%,0 34%,2% 24%,0 13%);
-  z-index:4;
-}
-.rulesSheet h3{text-align:center;margin:0 0 7px;font-size:22px;font-weight:400}
-.rule{display:grid;grid-template-columns:30px 1fr;gap:7px;align-items:center;border-top:1px solid #76552255;padding:6px 0;font-size:12px;line-height:1.05}
-.miniDie{width:27px;height:27px;border:1px solid #9a6f37;border-radius:5px;background:#e6c78e;display:grid;place-items:center;font-size:18px;box-shadow:inset -2px -2px 4px #8e6536}
-.rule b{display:block;font-size:12px}.rule em{font-style:normal;font-size:14px}
-.seq{grid-column:1/3;display:flex;justify-content:center;gap:2px;margin-top:2px}.seq .miniDie{width:22px;height:22px;font-size:14px}
-
-.controls{display:grid;grid-template-columns:1.15fr 1fr;gap:8px}
-.action{
-  min-height:58px;border:2px solid #5f452b;border-radius:8px;color:#e8cc91;
-  background:linear-gradient(#33251c,#17110d);font-size:18px;font-weight:700;
-  box-shadow:inset 0 0 0 2px #0c0907,inset 0 1px #fff2,0 4px 9px #0009;
-  text-shadow:0 2px #000;touch-action:manipulation;
-}
-.action.primary{background:linear-gradient(#6b3e1b,#2d1a0e);border-color:#9a6b30}
-.action:disabled{opacity:.36;filter:grayscale(.5)}
-.bottom{
-  border:2px solid #3c2c20;border-radius:9px;padding:8px 10px;text-align:center;
-  background:linear-gradient(#211813,#0f0b09);box-shadow:inset 0 0 0 2px #090605,0 4px 10px #0008;
-}
-.goal{font-size:17px;color:#d7b66f}.hint{font-size:12px;color:#a99369;margin-top:3px}
-.newBtn{margin-top:7px;width:100%;min-height:40px;border:1px solid #5f452b;border-radius:7px;background:#19110d;color:#c9a86c;font-size:15px}
-
-dialog{width:min(92vw,430px);max-height:84svh;overflow:auto;color:#291709;background:#dec28d;border:2px solid #765027;border-radius:8px;box-shadow:0 15px 50px #000}
-dialog::backdrop{background:#000c}
-dialog h2{text-align:center;margin:0 0 8px}
-.close{float:right;border:1px solid #6f4b25;background:#3a2414;color:#efd79e;border-radius:6px;padding:8px}
-
-@media(max-width:560px){
-  .app{grid-template-rows:auto auto 1fr auto auto}
-  .board{min-height:430px}
-  .title{font-size:clamp(34px,12vw,50px)}
-  .rulesSheet{display:none}
-  .status{right:12px}
-  .die{width:68px;height:68px}
-}
-@media(min-width:561px){
-  .board{min-height:500px}
-}
-@media(max-height:760px){
-  .topbar{min-height:54px}.title{font-size:38px}.iconBtn{width:40px;height:40px}
-  .board{min-height:350px}.die{width:61px;height:61px}
-  .controls .action{min-height:50px}.hint{display:none}
-}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#120805">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Кости">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <title>Кости в таверне</title>
 </head>
 <body>
-<main class="app">
-  <header class="topbar">
-    <button id="rulesBtn" class="iconBtn" aria-label="Правила">?</button>
-    <h1 class="title">Кости в таверне</h1>
-    <button id="soundBtn" class="iconBtn" aria-label="Звук">♫</button>
-  </header>
+  <main class="game-shell">
+    <header class="top">
+      <button class="round-btn" id="rulesBtn" aria-label="Правила">?</button>
+      <h1>Кости в таверне</h1>
+      <button class="round-btn" id="soundBtn" aria-label="Звук">♫</button>
+    </header>
 
-  <section class="hud">
-    <article id="playerCard" class="card active">
-      <div class="cardTitle">Вы</div>
-      <div class="stats">
-        <div><span>Очки</span><strong id="playerScore">0</strong></div>
-        <div><span>Раунд</span><strong id="turnScore">0</strong></div>
-        <div><span>Отобрано</span><strong id="selectedScore">0</strong></div>
-      </div>
-    </article>
-    <article id="aiCard" class="card ai">
-      <div class="cardTitle">Соперник</div>
-      <div class="stats">
-        <div><span>Очки</span><strong id="aiScore">0</strong></div>
-        <div><span>Раунд</span><strong id="aiTurnScore">0</strong></div>
-        <div><span>Отобрано</span><strong id="aiSelectedScore">0</strong></div>
-      </div>
-    </article>
-  </section>
+    <section class="scores">
+      <article class="score-card player active" id="playerCard">
+        <h2>Вы</h2>
+        <div class="score-grid">
+          <div><span>Очки</span><strong id="playerScore">0</strong></div>
+          <div><span>Раунд</span><strong id="turnScore">0</strong></div>
+          <div><span>Отобрано</span><strong id="selectedScore">0</strong></div>
+        </div>
+      </article>
+      <article class="score-card enemy" id="aiCard">
+        <h2>Соперник</h2>
+        <div class="score-grid">
+          <div><span>Очки</span><strong id="aiScore">0</strong></div>
+          <div><span>Раунд</span><strong id="aiTurnScore">0</strong></div>
+          <div><span>Отобрано</span><strong id="aiSelectedScore">0</strong></div>
+        </div>
+      </article>
+    </section>
 
-  <section class="board">
-    <div class="atmosphere"><div class="cup"></div><div class="candle"></div></div>
-    <div id="status" class="status">Ваш ход. Бросьте кости.</div>
-    <div id="dice" class="diceArea"></div>
+    <section class="table">
+      <div class="status" id="status">Ваш ход. Бросьте кости.</div>
+      <div class="dice-zone" id="dice"></div>
 
-    <aside class="rulesSheet" aria-label="Комбинации">
-      <h3>Правила</h3>
-      <div class="rule"><div class="miniDie">⚀</div><div><b>Единицы</b><em>100</em></div></div>
-      <div class="rule"><div class="miniDie">⚄</div><div><b>Пятёрки</b><em>50</em></div></div>
-      <div class="rule"><div class="miniDie">⚂</div><div><b>Три одинаковых</b><em>×100</em></div></div>
-      <div class="rule"><div style="grid-column:1/3"><b>Последовательность 1–5</b></div><div class="seq"><i class="miniDie">⚀</i><i class="miniDie">⚁</i><i class="miniDie">⚂</i><i class="miniDie">⚃</i><i class="miniDie">⚄</i></div></div>
-      <div class="rule"><div style="grid-column:1/3"><b>Последовательность 1–6</b></div><div class="seq"><i class="miniDie">⚀</i><i class="miniDie">⚁</i><i class="miniDie">⚂</i><i class="miniDie">⚃</i><i class="miniDie">⚄</i><i class="miniDie">⚅</i></div></div>
-    </aside>
-  </section>
+      <aside class="rules-card">
+        <h3>Правила</h3>
+        <div class="rule-row"><span class="mini-die">⚀</span><div><b>Единицы</b><small>100</small></div></div>
+        <div class="rule-row"><span class="mini-die">⚄</span><div><b>Пятёрки</b><small>50</small></div></div>
+        <div class="rule-row"><span class="mini-die">⚂</span><div><b>Три одинаковых</b><small>×100</small></div></div>
+        <div class="rule-seq"><b>1–2–3–4–5</b><span>⚀ ⚁ ⚂ ⚃ ⚄</span><small>500</small></div>
+        <div class="rule-seq"><b>2–3–4–5–6</b><span>⚁ ⚂ ⚃ ⚄ ⚅</span><small>750</small></div>
+        <div class="rule-seq"><b>1–2–3–4–5–6</b><span>⚀ ⚁ ⚂ ⚃ ⚄ ⚅</span><small>1500</small></div>
+      </aside>
+    </section>
 
-  <section class="controls">
-    <button id="rollBtn" class="action primary">БРОСИТЬ</button>
-    <button id="bankBtn" class="action" disabled>ОТОБРАТЬ ОЧКИ</button>
-  </section>
+    <section class="actions">
+      <button id="rollBtn" class="game-btn primary">БРОСИТЬ</button>
+      <button id="bankBtn" class="game-btn" disabled>ОТОБРАТЬ ОЧКИ</button>
+    </section>
 
-  <section class="bottom">
-    <div class="goal">♛ Цель: <span id="targetLabel">4000</span> очков</div>
-    <div class="hint">Наберите больше соперника и достигните цели.</div>
-    <button id="newBtn" class="newBtn">НОВАЯ ИГРА</button>
-  </section>
-</main>
+    <section class="goal">
+      <div>♛ Цель: <strong>4000 очков</strong></div>
+      <small>Наберите больше соперника и достигните цели.</small>
+      <button id="newBtn" class="new-btn">НОВАЯ ИГРА</button>
+    </section>
+  </main>
 
-<dialog id="rules">
-  <button id="closeRules" class="close">Закрыть</button>
-  <h2>Комбинации</h2>
-  <div class="rule"><div class="miniDie">⚀</div><div><b>Одна единица</b><em>100 очков</em></div></div>
-  <div class="rule"><div class="miniDie">⚄</div><div><b>Одна пятёрка</b><em>50 очков</em></div></div>
-  <div class="rule"><div class="miniDie">⚂</div><div><b>Три единицы</b><em>1000 очков</em></div></div>
-  <div class="rule"><div class="miniDie">⚅</div><div><b>Три одинаковых 2–6</b><em>число × 100</em></div></div>
-  <div class="rule"><div class="miniDie">✦</div><div><b>Четыре, пять, шесть одинаковых</b><em>очки удваиваются</em></div></div>
-  <div class="rule"><div class="miniDie">Ⅰ</div><div><b>1–2–3–4–5</b><em>500 очков</em></div></div>
-  <div class="rule"><div class="miniDie">Ⅱ</div><div><b>2–3–4–5–6</b><em>750 очков</em></div></div>
-  <div class="rule"><div class="miniDie">Ⅲ</div><div><b>1–2–3–4–5–6</b><em>1500 очков</em></div></div>
-</dialog>
+  <dialog id="rulesDialog">
+    <button id="closeRules" class="dialog-close">Закрыть</button>
+    <h2>Правила</h2>
+    <div class="full-rules">
+      <p><b>⚀ Единица:</b> 100 очков</p>
+      <p><b>⚄ Пятёрка:</b> 50 очков</p>
+      <p><b>Три единицы:</b> 1000 очков</p>
+      <p><b>Три одинаковых 2–6:</b> число × 100</p>
+      <p><b>Четыре, пять и шесть одинаковых:</b> каждая следующая кость удваивает комбинацию</p>
+      <p><b>1–2–3–4–5:</b> 500 очков</p>
+      <p><b>2–3–4–5–6:</b> 750 очков</p>
+      <p><b>1–2–3–4–5–6:</b> 1500 очков</p>
+    </div>
+  </dialog>
 
-<script>
-const target=4000;
-let state={player:0,ai:0,turn:0,whose:'player',dice:[],available:6,selected:new Set(),rolled:false,sound:true,over:false,aiTurn:0};
-const $=id=>document.getElementById(id);
-const diceEl=$('dice'),statusEl=$('status'),rollBtn=$('rollBtn'),bankBtn=$('bankBtn');
-const positions=[
-  {x:24,y:34,r:-13},{x:52,y:21,r:16},{x:72,y:42,r:-9},
-  {x:38,y:62,r:11},{x:65,y:70,r:-17},{x:48,y:45,r:6}
-];
-const pipMap={
-  1:[[50,50]],2:[[30,30],[70,70]],3:[[28,28],[50,50],[72,72]],
-  4:[[28,28],[72,28],[28,72],[72,72]],5:[[28,28],[72,28],[50,50],[28,72],[72,72]],
-  6:[[28,23],[72,23],[28,50],[72,50],[28,77],[72,77]]
-};
-function dieHTML(v){return pipMap[v].map(([x,y])=>`<i class="pip" style="left:${x}%;top:${y}%;transform:translate(-50%,-50%)"></i>`).join('')}
-function save(){try{localStorage.setItem('tavernDiceV3',JSON.stringify({...state,selected:[...state.selected]}))}catch(e){}}
-function load(){try{const s=JSON.parse(localStorage.getItem('tavernDiceV3'));if(s&&!s.over)state={...state,...s,selected:new Set(s.selected||[])}}catch(e){}}
-function beep(freq=160,d=.06){if(!state.sound)return;try{const c=new(window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=freq;o.type='triangle';g.gain.setValueAtTime(.045,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.connect(g);g.connect(c.destination);o.start();o.stop(c.currentTime+d)}catch(e){}}
-function randomDie(){return 1+Math.floor(Math.random()*6)}
-function scoreDice(vals){
-  if(!vals.length)return 0;
-  const sorted=[...vals].sort((a,b)=>a-b),key=sorted.join('');
-  if(key==='123456')return 1500;if(key==='12345')return 500;if(key==='23456')return 750;
-  const counts=[0,0,0,0,0,0,0];vals.forEach(v=>counts[v]++);
-  let score=0;
-  for(let v=1;v<=6;v++){let n=counts[v];if(n>=3){let base=v===1?1000:v*100;score+=base*Math.pow(2,n-3);counts[v]=0}}
-  return score+counts[1]*100+counts[5]*50;
-}
-function hasAnyScore(vals){if(vals.includes(1)||vals.includes(5))return true;const c={};vals.forEach(v=>c[v]=(c[v]||0)+1);if(Object.values(c).some(n=>n>=3))return true;const k=[...vals].sort((a,b)=>a-b).join('');return k.includes('12345')||k.includes('23456')||k.includes('123456')}
-function selectedValues(){return [...state.selected].map(i=>state.dice[i])}
-function render(){
-  $('playerScore').textContent=state.player;$('aiScore').textContent=state.ai;
-  $('turnScore').textContent=state.whose==='player'?state.turn:0;
-  $('selectedScore').textContent=state.whose==='player'?scoreDice(selectedValues()):0;
-  $('aiTurnScore').textContent=state.whose==='ai'?state.aiTurn:0;
-  $('aiSelectedScore').textContent=state.whose==='ai'?scoreDice(selectedValues()):0;
-  $('playerCard').classList.toggle('active',state.whose==='player');$('aiCard').classList.toggle('active',state.whose==='ai');
-  diceEl.innerHTML='';
-  state.dice.forEach((v,i)=>{
-    const p=positions[i]||positions[0],d=document.createElement('button');
-    d.className='die';d.style.left=p.x+'%';d.style.top=p.y+'%';d.style.setProperty('--rot',p.r+'deg');d.innerHTML=dieHTML(v);
-    if(state.selected.has(i))d.classList.add('selected');
-    if(state.whose!=='player'||!state.rolled)d.classList.add('locked');
-    d.addEventListener('click',()=>toggleDie(i));diceEl.appendChild(d);
-  });
-  const sc=scoreDice(selectedValues());
-  rollBtn.disabled=state.over||state.whose!=='player'||(state.rolled&&sc===0);
-  bankBtn.disabled=state.over||state.whose!=='player'||!state.rolled||sc===0;
-  rollBtn.textContent=state.rolled?'РИСКНУТЬ':'БРОСИТЬ';
-  save();
-}
-function toggleDie(i){state.selected.has(i)?state.selected.delete(i):state.selected.add(i);const sc=scoreDice(selectedValues());statusEl.textContent=sc?`Отобрано: ${sc} очков`:'Эта комбинация очков не даёт';beep(250,.035);render()}
-function animateDice(){[...diceEl.children].forEach(d=>d.classList.add('rolling'));setTimeout(()=>[...diceEl.children].forEach(d=>d.classList.remove('rolling')),470)}
-function playerRoll(){
-  if(state.rolled){const sc=scoreDice(selectedValues());if(!sc)return;state.turn+=sc;state.available-=state.selected.size;if(state.available<=0){state.available=6;statusEl.textContent='Горячие кости! Бросайте все шесть.'}}
-  state.dice=Array.from({length:state.available},randomDie);state.selected.clear();state.rolled=true;beep(120,.1);render();animateDice();
-  if(!hasAnyScore(state.dice)){state.turn=0;state.rolled=false;statusEl.textContent='Неудачный бросок. Очки раунда сгорели.';render();setTimeout(startAI,1000)}
-  else statusEl.textContent='Выберите кости с очками.';
-}
-function bank(){
-  const sc=scoreDice(selectedValues());if(!sc)return;state.turn+=sc;state.player+=state.turn;beep(420,.12);
-  state.turn=0;state.rolled=false;state.available=6;state.dice=[];state.selected.clear();
-  if(checkWin('player'))return;statusEl.textContent='Очки записаны. Ход соперника.';render();setTimeout(startAI,700)
-}
-function checkWin(who){if(state[who]>=target){state.over=true;statusEl.textContent=who==='player'?'Вы выиграли партию!':'Соперник победил.';render();return true}return false}
-function bestSelection(vals){let best={score:0,idx:[]};for(let mask=1;mask<(1<<vals.length);mask++){const idx=[],arr=[];for(let i=0;i<vals.length;i++)if(mask>>i&1){idx.push(i);arr.push(vals[i])}const s=scoreDice(arr);if(s>best.score||(s===best.score&&idx.length<best.idx.length))best={score:s,idx}}return best}
-function startAI(){if(state.over)return;state.whose='ai';state.aiTurn=0;state.available=6;state.dice=[];state.selected.clear();state.rolled=false;render();aiRoll()}
-function aiRoll(){
-  state.dice=Array.from({length:state.available},randomDie);state.selected.clear();state.rolled=true;statusEl.textContent='Соперник бросает кости…';beep(105,.1);render();animateDice();
-  setTimeout(()=>{const best=bestSelection(state.dice);if(!best.score){state.aiTurn=0;statusEl.textContent='Сопернику не повезло. Очки сгорели.';render();setTimeout(endAI,900);return}
-  best.idx.forEach(i=>state.selected.add(i));state.aiTurn+=best.score;state.available-=best.idx.length;if(state.available<=0)state.available=6;render();
-  const need=target-state.ai,threshold=state.available<=2?650:900,shouldBank=state.aiTurn>=need||state.aiTurn>=threshold||(state.aiTurn>=550&&Math.random()<.55);
-  if(shouldBank){state.ai+=state.aiTurn;statusEl.textContent=`Соперник забирает ${state.aiTurn} очков.`;state.aiTurn=0;render();if(checkWin('ai'))return;setTimeout(endAI,900)}
-  else{statusEl.textContent=`Соперник рискует. Раунд: ${state.aiTurn}.`;render();setTimeout(aiRoll,950)}},650)
-}
-function endAI(){state.whose='player';state.turn=0;state.aiTurn=0;state.available=6;state.dice=[];state.selected.clear();state.rolled=false;statusEl.textContent='Ваш ход. Бросьте кости.';render()}
-function newGame(){state={player:0,ai:0,turn:0,whose:'player',dice:[],available:6,selected:new Set(),rolled:false,sound:state.sound,over:false,aiTurn:0};try{localStorage.removeItem('tavernDiceV3')}catch(e){}statusEl.textContent='Ваш ход. Бросьте кости.';render()}
-rollBtn.addEventListener('click',playerRoll);bankBtn.addEventListener('click',bank);
-$('rulesBtn').addEventListener('click',()=>$('rules').showModal());$('closeRules').addEventListener('click',()=>$('rules').close());
-$('newBtn').addEventListener('click',()=>{if(confirm('Начать новую игру?'))newGame()});
-$('soundBtn').addEventListener('click',()=>{state.sound=!state.sound;$('soundBtn').textContent=state.sound?'♫':'×';render()});
-load();$('soundBtn').textContent=state.sound?'♫':'×';render();
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
-</script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>
